@@ -1,0 +1,37 @@
+{
+  "name": "qq348069510/qq-group-webhook",
+  "version": "v1.0.0",
+  "type": "library",
+  "description": "QQ群WebHook机器人助手",
+  "keywords": [
+    "QQ群",
+    "QQ机器人",
+    "消息推送",
+    "QQGroup",
+    "WebHook",
+    "QQGroupWebHook"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/qq348069510/qq-group-webhook",
+  "authors": [
+    {
+      "name": "IT老酸奶",
+      "email": "348069510@qq.com",
+      "homepage": "http://www.huangjian-ln.cn",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "348069510@qq.com"
+  },
+  "require": {
+    "php": ">=5.4",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "QQGroup\\": "src"
+    }
+  }
+}
