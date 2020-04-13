@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | QQ群WebHook机器人助手 [ QQGroupWebHook ] v1.0.0
+// | QQ群WebHook机器人助手 [ QQGroupWebHook ] v1.1.0
 // +----------------------------------------------------------------------
 // | 版权所有 2020 IT老酸奶 https://github.com/qq348069510/qq-group-webhook
 // +----------------------------------------------------------------------
@@ -24,19 +24,19 @@ class WebHook
      * WebHook constructor.
      * @param $key
      */
-    public function __construct($key)
+    public function __construct($key = "")
     {
-        if (empty($key)) die("Key不能为空");
         $this->key = $key;
     }
 
     /**
      * 推送消息
-     * @param $msg int|string|array|object 消息
+     * @param $msg int|string|array|object 消息内容
      * @return bool
      */
     public function send($msg)
     {
+        if (empty($this->key)) die("Key不能为空");
         $url = $this->apiUrl(self::SEND) . "?key=" . $this->key;
         $data = json_encode(array(
             "content" => array(
@@ -52,7 +52,7 @@ class WebHook
         $response = $this->httpCurlPost($url, $data, $headers);
         if ($response != "") {
             $jsonResponse = json_decode($response, true);
-            if (empty($json)) {
+            if (empty($jsonResponse)) {
                 $this->errorMessage = $response;
             } else {
                 $this->errorMessage = $this->errorNoToMessage($jsonResponse['ec']);
@@ -60,6 +60,41 @@ class WebHook
             return false;
         }
         return true;
+    }
+
+    /**
+     * 批量推送消息
+     * @param $keys array 批量操作的key，非空数组
+     * @param null|int|string|array|object $msg 默认消息内容
+     * @return array
+     */
+    public function batSend($keys, $msg = null)
+    {
+        if (!is_array($keys) || empty($keys)) die("请使用非空数组");
+        $results = array_fill(0, count($keys), []);
+        foreach ($keys as $num => $key) {
+            $result = [];
+            if (is_array($key)) {
+                $this->key = $key[0];
+                $result[0] = $key[0];
+                if (!isset($key[1]) || empty($key[1])) {
+                    $send = $this->send($msg);
+                } else {
+                    $send = $this->send($key[1]);
+                }
+            } else {
+                $this->key = $key;
+                $result[0] = $key;
+                $send = $this->send($msg);
+            }
+            $result[1] = true;
+            if (!$send) {
+                $result[1] = false;
+                $result[2] = $this->getErrorMessage();
+            }
+            $results[$num] = $result;
+        }
+        return $results;
     }
 
     /**
